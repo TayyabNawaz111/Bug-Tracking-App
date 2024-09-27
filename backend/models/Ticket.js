@@ -23,6 +23,10 @@ const Ticket = sequelize.define("Ticket", {
     allowNull: false,
     defaultValue: "Backlog",
   },
+  severity: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 // Define association:
 Ticket.belongsTo(Project, {

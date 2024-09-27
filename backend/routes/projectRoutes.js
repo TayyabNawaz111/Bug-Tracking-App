@@ -3,7 +3,9 @@ const router = express.Router();
 const {
   getAllProjects,
   getProjectById,
+  createProject,
 } = require("../controllers/projectController");
+const authenticateToken = require("../middlewares/authenticateToken"); // import authenticator
 
 // Route to get all projects
 router.get("/", getAllProjects);
@@ -12,4 +14,5 @@ router.get("/", getAllProjects);
 
 router.get("/:id", getProjectById);
 
+router.post("/createProject", authenticateToken, createProject);
 module.exports = router;

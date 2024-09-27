@@ -13,6 +13,15 @@ const Project = sequelize.define("Project", {
   },
   description: {
     type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  startDate: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+  endDate: {
+    type: DataTypes.DATE,
     allowNull: true,
   },
 });

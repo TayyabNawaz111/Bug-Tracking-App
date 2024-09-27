@@ -10,6 +10,8 @@ const attachmentRoutes = require("../routes/attachmentRoutes"); // Import attach
 const commentRoutes = require("../routes/commentRoutes"); // Import comment route
 const activityLogRoutes = require("../routes/activityLogRoutes"); // Import activity log route
 const notificationRoutes = require("../routes/notificationRoutes"); // Import notification route
+const authRoutes = require("../routes/authRoutes") // Import auth routes
+const seedRoles = require("../seeders/seedRoles") // import seeder
 
 require("dotenv").config();
 
@@ -22,6 +24,7 @@ require("dotenv").config();
   try {
     await sequelize.sync({ alter: true });
     console.log("Models synchronized with the database.");
+    await seedRoles();
   } catch (error) {
     console.error("Unable to sync models:", error);
   }
@@ -34,6 +37,7 @@ require("dotenv").config();
   app.use(express.json());
 
   // Routes
+  app.use("/auth",authRoutes) // Route for authentications
   app.use("/users", userRoutes); // Route for user-related operations
   app.use("/projects", projectRoutes); // Route for project-related operations
   app.use("/roles", roleRoutes); // Route for role-related operations
