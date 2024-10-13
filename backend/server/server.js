@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const createDatabase = require("../config/database"); // Database creation script
 const sequelize = require("../config/connection"); // Sequelize connection
 const userRoutes = require("../routes/userRoutes"); // Import user routes
@@ -10,8 +11,8 @@ const attachmentRoutes = require("../routes/attachmentRoutes"); // Import attach
 const commentRoutes = require("../routes/commentRoutes"); // Import comment route
 const activityLogRoutes = require("../routes/activityLogRoutes"); // Import activity log route
 const notificationRoutes = require("../routes/notificationRoutes"); // Import notification route
-const authRoutes = require("../routes/authRoutes") // Import auth routes
-const seedRoles = require("../seeders/seedRoles") // import seeder
+const authRoutes = require("../routes/authRoutes"); // Import auth routes
+const seedRoles = require("../seeders/seedRoles"); // import seeder
 
 require("dotenv").config();
 
@@ -19,7 +20,7 @@ require("dotenv").config();
 (async function main() {
   // Create the database
   await createDatabase();
-
+  
   // Sync models
   try {
     await sequelize.sync({ alter: true });
@@ -31,13 +32,14 @@ require("dotenv").config();
 
   // Set up Express server
   const app = express();
+  app.use(cors());
   const port = process.env.PORT || 3000;
-
+  
   // Middleware to parse JSON requests
   app.use(express.json());
 
   // Routes
-  app.use("/auth",authRoutes) // Route for authentications
+  app.use("/auth", authRoutes); // Route for authentications
   app.use("/users", userRoutes); // Route for user-related operations
   app.use("/projects", projectRoutes); // Route for project-related operations
   app.use("/roles", roleRoutes); // Route for role-related operations
