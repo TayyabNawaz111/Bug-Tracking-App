@@ -2,13 +2,24 @@ const Ticket = require("../models/Ticket"); // Import the ticket model
 const Notification = require("../models/Notification"); // Import the Notification model
 const ActivityLog = require("../models/ActivityLog");
 
-// Get all tickets
+// Get all tickets assigned to the logged-in user
 const getAllTickets = async (req, res) => {
   try {
+    const userId = req.user.userId;
+    // Fetch all tickets from the database
     const tickets = await Ticket.findAll();
-    res.status(200).json(tickets);
+
+    // Filter tickets assigned to the logged-in user
+    const userTickets = tickets.filter(
+      (ticket) => ticket.assignedTo === userId
+    );
+
+    res.status(200).json(userTickets);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching tickets", error });
+    console.error("Error fetching tickets:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching tickets", error: error.message });
   }
 };
 

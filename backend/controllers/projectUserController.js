@@ -1,4 +1,5 @@
 const ProjectUser = require("../models/ProjectUser"); // Import the projectUser model
+const Project = require("../models/Project"); // Import the project model
 
 // Controller to get all Project Users
 const getAllProjectUsers = async (req, res) => {
@@ -26,7 +27,7 @@ const assignUsers = async (req, res) => {
     const existingAssignments = await ProjectUser.findAll({
       where: {
         projectId,
-        userId: userIds, 
+        userId: userIds,
       },
     });
 
@@ -63,7 +64,32 @@ const assignUsers = async (req, res) => {
     });
   }
 };
+
+const getAssignedProjects = async (req, res) => {
+  const userId = req.user.userId; // Extract user ID from JWT
+
+  try {
+    const assignedProjectIds = await ProjectUser.findAll({
+      where: { userId: userId },
+      attributes: ["projectId"],
+    });
+
+    const projectIds = assignedProjectIds.map(
+      (projUser) => projUser.projectId
+    );
+
+    const projects = await Project.findAll({
+      where: { id: projectIds },
+    });
+
+    res.json(projects);
+  } catch (error) {
+    console.error("Error fetching assigned projects:", error); // Log the error for debugging
+    res.status(500).json({ error: "Unable to fetch assigned projects" });
+  }
+};
 module.exports = {
   getAllProjectUsers,
   assignUsers,
+  getAssignedProjects,
 };

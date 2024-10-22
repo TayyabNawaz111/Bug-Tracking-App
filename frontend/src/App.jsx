@@ -11,6 +11,10 @@ import AdminDashboard from "./pages/AdminDashboard";
 import DevDashboard from "./pages/DevDashboard";
 import TesterDashboard from "./pages/TesterDashboard";
 import ManagerDashboard from "./pages/ManagerDashboard";
+import ProjectsPage from "./pages/ProjectsPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import StatusPage from "./pages/StatusPage";
+import BugsPage from "./pages/BugsPage";
 
 function App() {
   const [isSignIn, setIsSignIn] = useState(false);
@@ -75,6 +79,11 @@ function App() {
             <Route path="*" element={<Navigate to="/dashboard" />} />
           </>
         )}
+
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/bugs" element={<BugsPage />} />
+        <Route path="/status" element={<StatusPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
       </Routes>
     </Router>
   );
