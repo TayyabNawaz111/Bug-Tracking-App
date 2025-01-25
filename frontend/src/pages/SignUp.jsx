@@ -123,8 +123,7 @@ const SignUp = ({ setIsSignIn, setRoleId }) => {
               </option>
               <option value="1">Admin</option>
               <option value="2">Developer</option>
-              <option value="3">Project Manager</option>
-              <option value="4">QA Tester</option>
+              <option value="3">QA Tester</option>
             </select>
           </div>
           <button

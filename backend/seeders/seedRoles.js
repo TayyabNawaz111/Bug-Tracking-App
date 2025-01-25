@@ -5,8 +5,7 @@ const seedRoles = async () => {
     await Role.bulkCreate([
       { id: 1, name: 'Admin' },
       { id: 2, name: 'Developer' },
-      { id: 3, name: 'Project Manager' },
-      { id: 4, name: 'QA Tester' },
+      { id: 3, name: 'QA Tester' },
     ], { ignoreDuplicates: true }); // Ignore if roles already exist
 
     console.log('Roles have been seeded');

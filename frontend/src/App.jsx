@@ -10,7 +10,6 @@ import SignIn from "./pages/SignIn";
 import AdminDashboard from "./pages/AdminDashboard";
 import DevDashboard from "./pages/DevDashboard";
 import TesterDashboard from "./pages/TesterDashboard";
-import ManagerDashboard from "./pages/ManagerDashboard";
 import ProjectsPage from "./pages/ProjectsPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import StatusPage from "./pages/StatusPage";
@@ -40,10 +39,6 @@ function App() {
       case 2:
         return <DevDashboard setIsSignIn={setIsSignIn} setRoleId={setRoleId} />;
       case 3:
-        return (
-          <ManagerDashboard setIsSignIn={setIsSignIn} setRoleId={setRoleId} />
-        );
-      case 4:
         return (
           <TesterDashboard setIsSignIn={setIsSignIn} setRoleId={setRoleId} />
         );

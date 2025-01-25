@@ -23,7 +23,7 @@ const getProjectById = async (req, res) => {
   }
 };
 const createProject = async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description ,endDate} = req.body;
   const userId = req.user.userId; // Extracted user ID from JWT
   try {
     // Create the project and associate it with the logged-in user
@@ -31,6 +31,7 @@ const createProject = async (req, res) => {
       title,
       description,
       createdBy: userId,
+      endDate
     });
 
     res.status(201).json({ message: "Project created successfully", project });
