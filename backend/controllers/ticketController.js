@@ -22,7 +22,34 @@ const getAllTickets = async (req, res) => {
       .json({ message: "Error fetching tickets", error: error.message });
   }
 };
+const getATicket = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const ticket = await Ticket.findByPk(id);
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    res.status(200).json(ticket);
+  } catch (error) {
+    console.error("Error fetching ticket:", error);
+    res.status(500).json({ message: "Error fetching ticket", error: error.message });
+  }
+};
+const AllTickets = async (req, res) => {
+  try {
+    // Fetch all tickets from the database
+    const tickets = await Ticket.findAll();
+    res.status(200).json(tickets);
+  } catch (error) {
+    console.error("Error fetching tickets:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching tickets", error: error.message });
+  }
+};
 // Create a new ticket
 const createTicket = async (req, res) => {
   const { userId, projectId } = req.params; // Get userId from request parameters
@@ -181,4 +208,6 @@ module.exports = {
   createTicket,
   updateStatus,
   assignDeveloper,
+  AllTickets,
+  getATicket
 };

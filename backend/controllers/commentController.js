@@ -1,70 +1,84 @@
-const Comment = require("../models/Comment"); // Import the Comment model
-const User = require("../models/User"); // Import the User model
-const Notification = require("../models/Notification"); // Import the Notification model
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
+const Comment = require("../models/Comment");
+const User = require("../models/User");
+const Notification = require("../models/Notification");
 
-// Get comments for a specific ticket
+// Configure Multer for file uploads
+const storage = multer.memoryStorage(); // Store files in memory
+const upload = multer({ storage });
+
+// Create a new comment (with file upload)
+const createComment = async (req, res) => {
+  const { ticketId } = req.params;
+  const { content } = req.body;
+  const userId = req.user.userId;
+
+  if (!content) {
+    return res.status(400).json({ message: "Comment content is required" });
+  }
+
+  let fileUrl = null;
+
+  // Handle file upload
+  if (req.file) {
+    try {
+      const uploadPath = path.join(__dirname, "../server/uploads");
+
+      // Create uploads directory if it doesn't exist
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
+
+      const filename = `${req.file.originalname}`;
+      const filePath = path.join(uploadPath, filename);
+
+      fs.writeFileSync(filePath, req.file.buffer);
+      fileUrl = `/uploads/${filename}`;
+    } catch (error) {
+      return res.status(500).json({ message: "Error saving file", error });
+    }
+  }
+
+  try {
+    const newComment = await Comment.create({
+      content,
+      createdBy: userId,
+      ticketId,
+      fileUrl,
+    });
+
+    await Notification.create({
+      title: "New Comment",
+      description: `A comment was added by user with ID: ${userId}`,
+      ticketId,
+    });
+
+    res.status(201).json({ message: "Comment created", comment: newComment });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating comment", error });
+  }
+};
+
+// Get comments for a ticket
 const getCommentsForTicket = async (req, res) => {
   const { ticketId } = req.params;
 
   try {
     const comments = await Comment.findAll({
       where: { ticketId },
-      include: [
-        {
-          model: User,
-          attributes: ["id", "name"], // Include user details
-        },
-      ],
+      include: [{ model: User, attributes: ["id", "name"] }],
     });
     res.status(200).json(comments);
   } catch (error) {
-    console.error("Error fetching comments:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching comments", error: error.message });
+    res.status(500).json({ message: "Error fetching comments", error });
   }
 };
 
-// Create a new comment
-const createComment = async (req, res) => {
-  const { ticketId } = req.params; // Get ticketId from request parameters
-  const { content } = req.body; // Get content from request body
-  const userId = req.user.userId; // Assuming user ID is stored in req.user by your authentication middleware
-  // Validate input
-  if (!content) {
-    return res.status(400).json({ message: "Comment content is required" });
-  }
-
-  try {
-    // Create the comment
-    const newComment = await Comment.create({
-      content,
-      createdBy: userId,
-      ticketId,
-    });
-
-    try {
-      await Notification.create({
-        title: "New Comment",
-        description: `A comment added by the user with id: ${userId}`,
-        ticketId: ticketId,
-      });
-    } catch (error) {
-      console.error("Error creating Notification:", error);
-    }
-
-    res
-      .status(201)
-      .json({ message: "Comment created successfully", comment: newComment });
-  } catch (error) {
-    console.error("Error creating comment:", error);
-    res
-      .status(500)
-      .json({ message: "Error creating comment", error: error.message });
-  }
-};
-
+// Export the functions
 module.exports = {
-  getCommentsForTicket,
   createComment,
+  getCommentsForTicket,
+  upload, // Export Multer upload middleware
 };

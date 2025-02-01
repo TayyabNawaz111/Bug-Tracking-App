@@ -5,11 +5,14 @@ const {
   createTicket,
   updateStatus,
   assignDeveloper,
+  AllTickets,getATicket
 } = require("../controllers/ticketController");
 const authenticateToken = require("../middlewares/authenticateToken");
 
 // Route to get all tickets
 router.get("/", authenticateToken, getAllTickets);
+router.get("/AllTickets", authenticateToken, AllTickets);
+router.get("/:id", authenticateToken, getATicket);
 //Route to create ticket
 router.post(
   "/:userId/:projectId/createTicket",

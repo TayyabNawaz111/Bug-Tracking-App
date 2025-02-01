@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const createDatabase = require("../config/database"); // Database creation script
 const sequelize = require("../config/connection"); // Sequelize connection
 const userRoutes = require("../routes/userRoutes"); // Import user routes
@@ -20,7 +21,7 @@ require("dotenv").config();
 (async function main() {
   // Create the database
   await createDatabase();
-  
+
   // Sync models
   try {
     await sequelize.sync({ alter: true });
@@ -34,9 +35,21 @@ require("dotenv").config();
   const app = express();
   app.use(cors());
   const port = process.env.PORT || 3000;
-  
+
   // Middleware to parse JSON requests
   app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  //Download File
+  app.get("/uploads/:filename", (req, res) => {
+    const filePath = path.join(__dirname, "uploads", req.params.filename);
+
+    res.download(filePath, req.params.filename, (err) => {
+      if (err) {
+        console.error("Error downloading file:", err);
+        res.status(500).send("Error downloading file.");
+      }
+    });
+  });
 
   // Routes
   app.use("/auth", authRoutes); // Route for authentications

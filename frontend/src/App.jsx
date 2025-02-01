@@ -14,6 +14,7 @@ import ProjectsPage from "./pages/ProjectsPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import StatusPage from "./pages/StatusPage";
 import BugsPage from "./pages/BugsPage";
+import BugDetailPage from "./pages/BugDetailPage";
 
 function App() {
   const [isSignIn, setIsSignIn] = useState(false);
@@ -79,6 +80,7 @@ function App() {
         <Route path="/bugs" element={<BugsPage />} />
         <Route path="/status" element={<StatusPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/bugDetailPage/:bugId" element={<BugDetailPage />} />
       </Routes>
     </Router>
   );

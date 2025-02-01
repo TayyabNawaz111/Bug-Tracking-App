@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/connection"); // Import sequelize connection
 const User = require("./User");
 const Ticket = require("./Ticket");
+
 const Comment = sequelize.define("Comment", {
   id: {
     type: DataTypes.INTEGER,
@@ -12,7 +13,13 @@ const Comment = sequelize.define("Comment", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  fileUrl: {
+    type: DataTypes.STRING,
+    allowNull: true, // The file URL can be null if no file is uploaded
+  },
 });
+
+// Associations
 Comment.belongsTo(User, {
   foreignKey: {
     name: "createdBy",
@@ -28,6 +35,7 @@ Comment.belongsTo(Ticket, {
   foreignKey: "ticketId",
   allowNull: false,
 });
+
 Ticket.hasMany(Comment, {
   foreignKey: "ticketId",
 });
