@@ -1,20 +1,8 @@
-# Bug Tracking Application
+# React + Vite
 
-## Project Overview
-The goal of this project is to build a bug tracking application that allows teams to track, manage, and resolve bugs or issues in their projects. The application should be intuitive, user-friendly, and efficient in handling bug reports.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Functional Requirements
+Currently, two official plugins are available:
 
-...
-
-## Database Schema
-
-Here is the database schema for the bug tracking application:
-
-![Database Schema](./images/db-schema.jpg)
-
-## Technologies Used
-- **Frontend**: React.js, Typescript
-- **Backend**: Node.js, Express
-- **Database**: PostgreSQL
-- **Authentication**: JWT (JSON Web Tokens)
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
