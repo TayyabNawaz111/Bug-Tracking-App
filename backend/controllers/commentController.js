@@ -42,7 +42,7 @@ const createComment = async (req, res) => {
   }
 
   try {
-    const newComment = await Comment.create({
+    const createdComment = await Comment.create({
       content,
       createdBy: userId,
       ticketId,
@@ -53,6 +53,11 @@ const createComment = async (req, res) => {
       title: "New Comment",
       description: `A comment was added by user with ID: ${userId}`,
       ticketId,
+    });
+
+    const newComment = await Comment.findOne({
+      where: { id: createdComment.id },
+      include: [{ model: User, attributes: ["id", "name", "email"] }],
     });
 
     res.status(201).json({ message: "Comment created", comment: newComment });
@@ -68,7 +73,7 @@ const getCommentsForTicket = async (req, res) => {
   try {
     const comments = await Comment.findAll({
       where: { ticketId },
-      include: [{ model: User, attributes: ["id", "name"] }],
+      include: [{ model: User, attributes: ["id", "name", "email"] }],
     });
     res.status(200).json(comments);
   } catch (error) {

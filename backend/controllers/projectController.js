@@ -1,4 +1,8 @@
 const Project = require("../models/Project"); // Import the project model
+const ProjectUser = require("../models/ProjectUser");
+const User = require("../models/User");
+const Ticket = require("../models/Ticket");
+
 // Controller to get all projects
 const getAllProjects = async (req, res) => {
   try {
@@ -22,6 +26,35 @@ const getProjectById = async (req, res) => {
     res.status(500).json({ error: "Unable to fetch project" });
   }
 };
+
+const getProjectDetails = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const project = await Project.findByPk(id, {
+      include: [
+        {
+          model: ProjectUser,
+          include: [{ model: User, attributes: ["id", "name", "email"] }],
+          attributes: ["id", "userId"],
+        },
+        {
+          model: Ticket,
+          attributes: ["id", "title", "status", "severity", "assignedTo", "createdBy"],
+        },
+      ],
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    res.json(project);
+  } catch (error) {
+    console.error("Error fetching project details:", error);
+    res.status(500).json({ error: "Unable to fetch project details" });
+  }
+};
 const createProject = async (req, res) => {
   const { title, description ,endDate} = req.body;
   const userId = req.user.userId; // Extracted user ID from JWT
@@ -43,5 +76,6 @@ const createProject = async (req, res) => {
 module.exports = {
   getAllProjects,
   getProjectById,
+  getProjectDetails,
   createProject,
 };

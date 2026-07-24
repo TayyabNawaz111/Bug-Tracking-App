@@ -7,14 +7,13 @@ import {
 } from "react-router-dom";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
-import AdminDashboard from "./pages/AdminDashboard";
-import DevDashboard from "./pages/DevDashboard";
-import TesterDashboard from "./pages/TesterDashboard";
+import Dashboard from "./pages/Dashboard";
 import ProjectsPage from "./pages/ProjectsPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import StatusPage from "./pages/StatusPage";
 import BugsPage from "./pages/BugsPage";
 import BugDetailPage from "./pages/BugDetailPage";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 function App() {
   const [isSignIn, setIsSignIn] = useState(false);
@@ -30,59 +29,46 @@ function App() {
     }
   }, []);
 
-  // Map roleId to a dashboard component
-  const DashboardComponent = () => {
-    switch (roleId) {
-      case 1:
-        return (
-          <AdminDashboard setIsSignIn={setIsSignIn} setRoleId={setRoleId} />
-        );
-      case 2:
-        return <DevDashboard setIsSignIn={setIsSignIn} setRoleId={setRoleId} />;
-      case 3:
-        return (
-          <TesterDashboard setIsSignIn={setIsSignIn} setRoleId={setRoleId} />
-        );
-      default:
-        return <Navigate to="/" />;
-    }
-  };
-
   return (
-    <Router>
-      <Routes>
-        {!isSignIn ? (
-          <>
-            <Route
-              path="/"
-              element={
-                <SignIn setIsSignIn={setIsSignIn} setRoleId={setRoleId} />
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <SignUp setIsSignIn={setIsSignIn} setRoleId={setRoleId} />
-              }
-            />
-            {/* Catch-all to SignIn */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        ) : (
-          <>
-            <Route path="/dashboard" element={<DashboardComponent />} />
-            {/* Catch-all to Dashboard */}
-            <Route path="*" element={<Navigate to="/dashboard" />} />
-          </>
-        )}
-
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/bugs" element={<BugsPage />} />
-        <Route path="/status" element={<StatusPage />} />
-        <Route path="/notifications" element={<NotificationsPage />} />
-        <Route path="/bugDetailPage/:bugId" element={<BugDetailPage />} />
-      </Routes>
-    </Router>
+    <>
+      <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 1000 }}>
+        <ThemeToggle />
+      </div>
+      <Router>
+        <Routes>
+          {!isSignIn ? (
+            <>
+              <Route
+                path="/"
+                element={<SignIn setIsSignIn={setIsSignIn} setRoleId={setRoleId} />}
+              />
+              <Route
+                path="/signup"
+                element={<SignUp setIsSignIn={setIsSignIn} setRoleId={setRoleId} />}
+              />
+              {/* Catch-all to SignIn */}
+              <Route path="*" element={<Navigate to="/" />} />
+            </>
+          ) : (
+            <>
+              <Route
+                path="/dashboard"
+                element={
+                  <Dashboard roleId={roleId} setIsSignIn={setIsSignIn} setRoleId={setRoleId} />
+                }
+              />
+              <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/bugs" element={<BugsPage />} />
+              <Route path="/status" element={<StatusPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/bugDetailPage/:bugId" element={<BugDetailPage />} />
+              {/* Catch-all to Dashboard */}
+              <Route path="*" element={<Navigate to="/dashboard" />} />
+            </>
+          )}
+        </Routes>
+      </Router>
+    </>
   );
 }
 

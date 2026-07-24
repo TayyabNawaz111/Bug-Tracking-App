@@ -18,6 +18,10 @@ const Ticket = sequelize.define("Ticket", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  stepsToReproduce: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   status: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -56,8 +60,10 @@ User.hasMany(Ticket, {
 
 //assignment
 Ticket.belongsTo(User, {
-  foreignKey: "assignedTo",
-  allowNull: true,
+  foreignKey: {
+    name: "assignedTo",
+    allowNull: false,
+  },
 });
 User.hasMany(Ticket, {
   foreignKey: "assignedTo",
