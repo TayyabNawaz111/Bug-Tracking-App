@@ -56,21 +56,27 @@ const updateUserRole = async (req, res) => {
 
 // Controller to add a new user (Admin functionality)
 const addUser = async (req, res) => {
-  const { username, email, password, roleId } = req.body;
+  const { name, email, password, roleId } = req.body;
+
+  if (!name || !email || !password || roleId === undefined || roleId === null) {
+    return res.status(400).json({ message: "Name, email, password, and role are required." });
+  }
 
   try {
-    // Check if the role exists
     const role = await Role.findByPk(roleId);
     if (!role) {
       return res.status(400).json({ message: "Invalid role" });
     }
 
-    // Hash the password using bcryptjs
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: "User with this email already exists" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the new user
     const newUser = await User.create({
-      username,
+      name,
       email,
       password: hashedPassword,
       roleId,
@@ -78,9 +84,11 @@ const addUser = async (req, res) => {
 
     res.status(201).json({ message: "User created successfully", user: newUser });
   } catch (error) {
+    console.error("Error adding user:", error);
     res.status(500).json({ message: "Error adding user", error: error.message });
   }
 };
+
 
 // Controller to delete a user (Admin functionality)
 const deleteUser = async (req, res) => {
@@ -94,11 +102,26 @@ const deleteUser = async (req, res) => {
     }
 
     // Delete the user
+    // With paranoid enabled, destroy() will set deletedAt instead of hard-delete
     await user.destroy();
 
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting user", error: error.message });
+  }
+};
+
+// Controller to restore a soft-deleted user (Admin)
+const restoreUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const restored = await User.restore({ where: { id } });
+    if (!restored) {
+      return res.status(404).json({ message: "User not found or not deleted" });
+    }
+    res.status(200).json({ message: "User restored successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error restoring user", error: error.message });
   }
 };
 

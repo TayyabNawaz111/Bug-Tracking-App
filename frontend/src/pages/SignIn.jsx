@@ -19,10 +19,28 @@ const SignIn = ({ setIsSignIn, setRoleId }) => {
         password,
       });
 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("roleId", response.data.roleId);
+      const { token, roleId } = response.data;
+      let userId = response.data.userId || response.data.id;
+
+      if (!userId && token) {
+        try {
+          const payloadBase64 = token.split(".")[1];
+          if (payloadBase64) {
+            const decoded = JSON.parse(atob(payloadBase64));
+            userId = decoded.userId || decoded.id;
+          }
+        } catch (e) {
+          console.error("Error decoding token for userId", e);
+        }
+      }
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("roleId", roleId);
+      if (userId) {
+        localStorage.setItem("userId", userId);
+      }
       setIsSignIn(true);
-      setRoleId(parseInt(response.data.roleId));
+      setRoleId(parseInt(roleId));
       setError(null);
       navigate("/dashboard");
     } catch (err) {
@@ -33,32 +51,34 @@ const SignIn = ({ setIsSignIn, setRoleId }) => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-blue-600">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-3xl font-bold text-center text-gray-800">Login</h2>
+      <div className="w-full max-w-md p-8 space-y-6 shadow-lg rounded-lg" style={{ backgroundColor: "var(--card-bg)", color: "var(--text-primary)", border: "1px solid var(--border)" }}>
+        <h2 className="text-3xl font-bold text-center">Login</h2>
         {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium" style={{ color: "var(--text-primary)" }}>
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 mt-1 border border-gray-300 rounded-md"
+              className="w-full p-3 mt-1 rounded-md"
+              style={{ border: "1px solid var(--border)", backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
               placeholder="Enter your email"
               required
             />
           </div>
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium" style={{ color: "var(--text-primary)" }}>
               Password
             </label>
             <input
               type={showPassword ? "text" : "password"} // Toggle between text and password
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 mt-1 border border-gray-300 rounded-md"
+              className="w-full p-3 mt-1 rounded-md"
+              style={{ border: "1px solid var(--border)", backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
               placeholder="Enter your password"
               required
             />
@@ -70,7 +90,8 @@ const SignIn = ({ setIsSignIn, setRoleId }) => {
               <i
                 className={`fas fa-eye${
                   showPassword ? "" : "-slash"
-                } text-gray-600 mt-6`}
+                } mt-6`}
+                style={{ color: "var(--text-primary)" }}
               ></i>
             </button>
           </div>

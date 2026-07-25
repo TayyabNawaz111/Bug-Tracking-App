@@ -1,3 +1,80 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+  Add this to public/index.html <head>, once:
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+*/
+
+@layer base {
+  :root {
+    /* surfaces */
+    --bg-primary: #f5f6f8;
+    --card-bg: #ffffff;
+    --border: #e2e5ea;
+    --overlay: rgba(15, 23, 42, 0.12);
+
+    /* text */
+    --text-primary: #12161c;
+    --text-secondary: #5b6472;
+
+    /* accent (primary actions) */
+    --accent: #0f6b65;
+    --accent-hover: #0b534f;
+
+    /* severity ladder: cool -> hot, Low -> Critical */
+    --severity-low: #8b95a1;
+    --severity-medium: #d98c2b;
+    --severity-high: #c1521a;
+    --severity-critical: #b23a3a;
+
+    /* status */
+    --status-open: #5b6472;
+    --status-progress: #d98c2b;
+    --status-resolved: #0f6b65;
+    --status-closed: #8b95a1;
+
+    /* type */
+    --font-display: "Space Grotesk", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+  }
+
+  [data-theme="dark"] {
+    --bg-primary: #0f141b;
+    --card-bg: #171d26;
+    --border: #2a333d;
+    --overlay: rgba(15, 23, 42, 0.64);
+
+    --text-primary: #f3f5f7;
+    --text-secondary: #94a3b8;
+
+    --accent: #4fbdb3;
+    --accent-hover: #6fd0c7;
+
+    --severity-low: #9aa5b1;
+    --severity-medium: #e3a24c;
+    --severity-high: #d97a46;
+    --severity-critical: #d96565;
+
+    --status-open: #94a3b8;
+    --status-progress: #e3a24c;
+    --status-resolved: #4fbdb3;
+    --status-closed: #6b7684;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+  }
+}

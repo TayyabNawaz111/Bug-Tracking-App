@@ -19,6 +19,13 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING, // Password field
     allowNull: false, // Makes the field required
   },
+  deletedAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+}, {
+  timestamps: true,
+  paranoid: true,
 });
 
 module.exports = User;

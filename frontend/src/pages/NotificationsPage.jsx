@@ -31,7 +31,7 @@ function NotificationsPage() {
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       {notifications.length === 0 && !error && (
-        <p className="text-gray-600 text-center">No notifications available.</p>
+        <p className="text-center" style={{ color: "var(--text-primary)" }}>No notifications available.</p>
       )}
 
       {notifications.length > 0 && (
@@ -39,12 +39,13 @@ function NotificationsPage() {
           {notifications.map((notification) => (
             <li
               key={notification.id}
-              className="bg-white shadow-md rounded-lg p-6 transition duration-300 transform hover:scale-105"
+              className="shadow-md rounded-lg p-6 transition duration-300 transform hover:scale-105"
+              style={{ backgroundColor: "var(--card-bg)", color: "var(--text-primary)", border: "1px solid var(--border)" }}
             >
-              <h5 className="text-xl font-semibold mb-2 text-gray-800">
+              <h5 className="text-xl font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
                 {notification.title}
               </h5>
-              <p className="text-gray-600">{notification.description}</p>
+              <p style={{ color: "var(--text-primary)" }}>{notification.description}</p>
             </li>
           ))}
         </ul>

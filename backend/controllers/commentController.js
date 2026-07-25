@@ -4,6 +4,7 @@ const multer = require("multer");
 const Comment = require("../models/Comment");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
+const { buildWebhookPayload, dispatchWebhookEvent } = require("../utils");
 
 // Configure Multer for file uploads
 const storage = multer.memoryStorage(); // Store files in memory
@@ -42,7 +43,7 @@ const createComment = async (req, res) => {
   }
 
   try {
-    const newComment = await Comment.create({
+    const createdComment = await Comment.create({
       content,
       createdBy: userId,
       ticketId,
@@ -54,6 +55,19 @@ const createComment = async (req, res) => {
       description: `A comment was added by user with ID: ${userId}`,
       ticketId,
     });
+
+    const newComment = await Comment.findOne({
+      where: { id: createdComment.id },
+      include: [{ model: User, attributes: ["id", "name", "email"] }],
+    });
+
+    await dispatchWebhookEvent(
+      buildWebhookPayload("comment.created", userId, {
+        ticketId,
+        commentId: createdComment.id,
+        content,
+      })
+    );
 
     res.status(201).json({ message: "Comment created", comment: newComment });
   } catch (error) {
@@ -68,7 +82,7 @@ const getCommentsForTicket = async (req, res) => {
   try {
     const comments = await Comment.findAll({
       where: { ticketId },
-      include: [{ model: User, attributes: ["id", "name"] }],
+      include: [{ model: User, attributes: ["id", "name", "email"] }],
     });
     res.status(200).json(comments);
   } catch (error) {
