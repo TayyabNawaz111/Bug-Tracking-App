@@ -46,7 +46,7 @@ The goal of this project is to build a bug tracking application that allows team
 
 The database schema for the bug tracking application is shown below.
 
-![Database Schema](./images/db-schema.svg)
+![Database Schema](./images/db-schema.jpeg)
 
 ## Technologies Used
 - **Frontend**: React.js
