@@ -6,14 +6,30 @@ const ADMIN_NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard" },
 ];
 
-const USER_NAV_LINKS = [
+const DEV_NAV_LINKS = [
   { to: "/dashboard", label: "Dashboard" },
   { to: "/projects", label: "Projects" },
   { to: "/bugs", label: "Bugs" },
-//   { to: "/notifications", label: "Notifications" },
+  { to: "/kanban", label: "Kanban" },
 ];
 
-function AppShell({ eyebrow, title, roleId, setIsSignIn, setRoleId, children }) {
+const TESTER_NAV_LINKS = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/projects", label: "Projects" },
+  { to: "/bugs", label: "Bugs" },
+];
+
+const getNavLinks = (roleId) => {
+  if (roleId === 1) return ADMIN_NAV_LINKS;
+  if (roleId === 2) return DEV_NAV_LINKS;
+  return TESTER_NAV_LINKS; // Tester (3) or unknown
+};
+
+
+function AppShell({ eyebrow, title, roleId: roleProp, setIsSignIn, setRoleId, children }) {
+  // Resolve roleId: prefer prop (e.g. DevDashboard passes 2), fallback to localStorage
+  const roleId = roleProp ?? Number(localStorage.getItem("roleId")) ?? 0;
+  const navLinks = getNavLinks(roleId);
   return (
     <div
       className="min-h-screen"
@@ -49,7 +65,7 @@ function AppShell({ eyebrow, title, roleId, setIsSignIn, setRoleId, children }) 
 
           {/* Persistent nav so pages are reachable without going back to the dashboard */}
           <nav className="flex gap-6 -mb-px">
-            {(roleId === 1 ? ADMIN_NAV_LINKS : USER_NAV_LINKS).map((link) => (
+            {navLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}

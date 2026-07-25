@@ -4,6 +4,7 @@ const multer = require("multer");
 const Comment = require("../models/Comment");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
+const { buildWebhookPayload, dispatchWebhookEvent } = require("../utils");
 
 // Configure Multer for file uploads
 const storage = multer.memoryStorage(); // Store files in memory
@@ -59,6 +60,14 @@ const createComment = async (req, res) => {
       where: { id: createdComment.id },
       include: [{ model: User, attributes: ["id", "name", "email"] }],
     });
+
+    await dispatchWebhookEvent(
+      buildWebhookPayload("comment.created", userId, {
+        ticketId,
+        commentId: createdComment.id,
+        content,
+      })
+    );
 
     res.status(201).json({ message: "Comment created", comment: newComment });
   } catch (error) {

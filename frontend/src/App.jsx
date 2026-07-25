@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -13,21 +13,21 @@ import NotificationsPage from "./pages/NotificationsPage";
 import StatusPage from "./pages/StatusPage";
 import BugsPage from "./pages/BugsPage";
 import BugDetailPage from "./pages/BugDetailPage";
+import KanbanPage from "./pages/KanbanPage";
 import { ThemeToggle } from "./components/ThemeToggle";
 
 function App() {
-  const [isSignIn, setIsSignIn] = useState(false);
-  const [roleId, setRoleId] = useState(null);
-
-  useEffect(() => {
+  // Initialize synchronously from localStorage so a page refresh
+  // never triggers the unauthenticated catch-all redirect.
+  const [isSignIn, setIsSignIn] = useState(() => {
     const token = localStorage.getItem("token");
     const savedRoleId = localStorage.getItem("roleId");
-
-    if (token && savedRoleId) {
-      setIsSignIn(true);
-      setRoleId(parseInt(savedRoleId, 10));
-    }
-  }, []);
+    return !!(token && savedRoleId);
+  });
+  const [roleId, setRoleId] = useState(() => {
+    const savedRoleId = localStorage.getItem("roleId");
+    return savedRoleId ? parseInt(savedRoleId, 10) : null;
+  });
 
   return (
     <>
@@ -62,6 +62,10 @@ function App() {
               <Route path="/status" element={<StatusPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/bugDetailPage/:bugId" element={<BugDetailPage />} />
+              <Route
+                path="/kanban"
+                element={<KanbanPage setIsSignIn={setIsSignIn} setRoleId={setRoleId} />}
+              />
               {/* Catch-all to Dashboard */}
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </>

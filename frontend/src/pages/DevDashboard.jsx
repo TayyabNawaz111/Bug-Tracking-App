@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AppShell from "../components/AppShell";
 import { API_URL } from "../config/config";
+import { getStoredRoleId } from "../utils";
 
 function DevDashboard({ setIsSignIn, setRoleId }) {
   const navigate = useNavigate();
@@ -31,8 +32,7 @@ function DevDashboard({ setIsSignIn, setRoleId }) {
           },
         );
 
-        console.log("Project created successfully:", response.data);
-
+        
         setNewProject({
           title: "",
           description: "",
@@ -53,6 +53,39 @@ function DevDashboard({ setIsSignIn, setRoleId }) {
       setProjectMessageType("error");
     }
   };
+
+  const [bugs, setBugs] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const roleId = getStoredRoleId();
+
+    const endpoint = roleId === 3 ? `${API_URL}/tickets/AllTickets` : `${API_URL}/tickets`;
+
+    axios
+      .get(endpoint, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => setBugs(res.data || []))
+      .catch((err) => console.error("Error fetching bugs for DevDashboard:", err));
+  }, []);
+
+  const recentByStatus = useMemo(() => {
+    const statuses = [
+      { key: "Open", label: "Recently opened" },
+      { key: "In Progress", label: "Recently in progress" },
+      { key: "Resolved", label: "Recently resolved" },
+      { key: "Approved", label: "Recently done" },
+    ];
+
+    const map = {};
+    statuses.forEach((s) => {
+      map[s.key] = [...bugs]
+        .filter((b) => (b.status || "Open") === s.key)
+        .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))
+        .slice(0, 5);
+    });
+
+    return { list: statuses, map };
+  }, [bugs]);
 
   const tiles = [
     {
@@ -87,6 +120,14 @@ function DevDashboard({ setIsSignIn, setRoleId }) {
       onClick: () => navigate("/notifications"),
       rail: "var(--severity-medium)",
     },
+    {
+      eyebrow: "05 · KANBAN",
+      title: "My Kanban Board",
+      body: "Drag and drop your assigned tickets across Open, In Progress, Resolved, and Approval stages.",
+      action: "Open board",
+      onClick: () => navigate("/kanban"),
+      rail: "#7c3aed",
+    },
   ];
 
   return (
@@ -96,6 +137,30 @@ function DevDashboard({ setIsSignIn, setRoleId }) {
       setIsSignIn={setIsSignIn}
       setRoleId={setRoleId}
     >
+      <div className="mb-8">
+        {recentByStatus.list.map((s) => (
+          <div key={s.key} className="mb-6">
+            <h2 className="text-lg font-semibold mb-3" style={{ fontFamily: "var(--font-display)" }}>
+              {s.label}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+              {(recentByStatus.map[s.key] || []).length === 0 && (
+                <div className="text-sm text-muted" style={{ color: "var(--text-secondary)" }}>No {s.label.toLowerCase()}.</div>
+              )}
+              {(recentByStatus.map[s.key] || []).map((bug) => (
+                <div key={bug.id} className="rounded-md p-4" style={{ backgroundColor: "var(--card-bg)", border: "1px solid var(--border)" }}>
+                  <div className="font-semibold">{bug.title}</div>
+                  <div className="text-sm" style={{ color: "var(--text-secondary)" }}>{bug.description}</div>
+                  <div className="text-xs mt-2" style={{ color: "var(--text-secondary)" }}>Updated: {bug.updatedAt ? new Date(bug.updatedAt).toLocaleDateString() : (bug.createdAt ? new Date(bug.createdAt).toLocaleDateString() : "N/A")}</div>
+                  <div className="mt-2">
+                    <button onClick={() => navigate(`/bugDetailPage/${bug.id}`)} className="text-xs font-medium" style={{ color: "var(--accent)" }}>View details →</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {projectMessage && (
           <div

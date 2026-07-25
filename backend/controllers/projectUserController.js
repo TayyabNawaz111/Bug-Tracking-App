@@ -1,5 +1,6 @@
-const ProjectUser = require("../models/ProjectUser"); // Import the projectUser model
-const Project = require("../models/Project"); // Import the project model
+const ProjectUser = require("../models/ProjectUser");
+const Project = require("../models/Project");
+const { normalizeIdList, buildWebhookPayload, dispatchWebhookEvent } = require("../utils");
 
 // Controller to get all Project Users
 const getAllProjectUsers = async (req, res) => {
@@ -14,13 +15,7 @@ const getAllProjectUsers = async (req, res) => {
 const assignUsers = async (req, res) => {
   const { projectId } = req.params;
   let { userIds } = req.body;
-
-  // Accept single value or array, coerce to number array
-  if (!Array.isArray(userIds)) {
-    if (userIds == null) userIds = [];
-    else userIds = [userIds];
-  }
-  userIds = userIds.map((id) => Number(id)).filter((id) => !Number.isNaN(id));
+  userIds = normalizeIdList(userIds);
 
   try {
     // Validate input
@@ -64,8 +59,14 @@ const assignUsers = async (req, res) => {
       newUserIds.map((userId) => ProjectUser.create({ projectId, userId }))
     );
 
-    // Return assigned user ids for clarity
     const assignedUserIds = assignments.map((a) => a.userId || a.dataValues?.userId);
+
+    await dispatchWebhookEvent(
+      buildWebhookPayload("project.user.assigned", req.user?.userId || null, {
+        projectId,
+        assignedUserIds,
+      })
+    );
 
     res.status(201).json({ message: "Users assigned to project successfully", assignedUserIds });
   } catch (error) {
