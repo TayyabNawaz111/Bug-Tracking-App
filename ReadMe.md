@@ -30,7 +30,7 @@ The goal of this project is to build a bug tracking application that allows team
   - Attachments (screenshots, logs, videos)
 - **Comments**: Users can comment on bugs for discussion, updates, and sharing information.
 
-### 4. Notification System
+### 4. Notification System (pending)
 - **Bug Assignment Notifications**: Users will receive notifications when a bug is assigned to them.
 - **Status Change Notifications**: Notifications will be sent when the status of a bug is updated.
 - **Comment Notifications**: Users will receive notifications when new comments are added to bugs.
